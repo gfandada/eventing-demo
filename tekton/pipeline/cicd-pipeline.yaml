@@ -1,0 +1,50 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: eventing-demo-cicd-pipeline
+  namespace: gfandada
+spec:
+  resources:
+    - name: eventing-demo-git-source
+      type: git
+  params:
+    - name: pathToContext
+      description: The path to the build context, used by Kaniko - within the workspace
+      default: src
+    - name: pathToYamlFile
+      description: The path to the yaml file to deploy within the git source
+    - name: imageUrl
+      description: Url of image repository
+    - name: imageTag
+      description: Tag to apply to the built image
+  tasks:
+    - name: eventing-demo-ci-task
+      taskRef:
+        name: eventing-demo-ci-task
+      params:
+        - name: pathToContext
+          value: "$(params.pathToContext)"
+        - name: imageUrl
+          value: "$(params.imageUrl)"
+        - name: imageTag
+          value: "$(params.imageTag)"
+      resources:
+        inputs:
+          - name: eventing-demo-git-source
+            resource: git-source
+    - name: eventing-demo-cd-task
+      taskRef:
+        name: eventing-demo-cd-task
+      runAfter:
+        - eventing-demo-ci-task
+      params:
+        - name: pathToYamlFile
+          value:  "$(params.pathToYamlFile)"
+        - name: imageUrl
+          value: "$(params.imageUrl)"
+        - name: imageTag
+          value: "$(params.imageTag)"
+      resources:
+        inputs:
+          - name: eventing-demo-git-source
+            resource: git-source

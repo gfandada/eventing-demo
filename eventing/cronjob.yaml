@@ -1,0 +1,13 @@
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: CronJobSource
+metadata:
+  name: test-cronjob-source
+  namespace: gfandada
+spec:
+  schedule: "*/2 * * * *"
+  data: '{"msg": "Hello world!"}'
+  sink:
+    ref:
+      apiVersion: eventing.knative.dev/v1alpha1
+      kind: Broker
+      name: gfandada

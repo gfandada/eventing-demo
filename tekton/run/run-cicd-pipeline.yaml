@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineRun
+metadata:
+  generateName: eventing-demo-
+  namespace: gfandada
+spec:
+  pipelineRef:
+    name: eventing-demo-cicd-pipeline
+  resources:
+    - name: eventing-demo-git-source
+      resourceRef:
+        name: eventing-demo-git-resource
+  params:
+    - name: pathToContext
+      value: "src"
+    - name: pathToYamlFile
+      value: "serving/service.yaml"
+    - name: imageUrl
+      value: "<your-docker-registry>/gfandada/eventing-demo"
+    - name: imageTag
+      value: "v1.0.0"
+  serviceAccountName: pipeline-account
+
